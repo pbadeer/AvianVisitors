@@ -33,7 +33,7 @@ export HOME=$HOME
 export USER=$USER
 
 PACKAGES_MISSING=
-for cmd in git jq ; do
+for cmd in git jq curl ; do
   if ! which $cmd &> /dev/null;then
       PACKAGES_MISSING="${PACKAGES_MISSING} $cmd"
   fi
@@ -44,10 +44,19 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
 fi
 
 branch=avian-visitors
-git clone -b $branch --depth=1 https://github.com/Twarner491/AvianVisitors.git ${HOME}/BirdNET-Pi &&
+repo_url=https://github.com/Twarner491/AvianVisitors.git
+install_dir=${HOME}/BirdNET-Pi
 
-$HOME/BirdNET-Pi/scripts/install_birdnet.sh
-if [ ${PIPESTATUS[0]} -eq 0 ];then
+if [ -d "${install_dir}/.git" ]; then
+  git -C "${install_dir}" fetch origin "${branch}"
+  git -C "${install_dir}" checkout "${branch}"
+  git -C "${install_dir}" reset --hard "origin/${branch}"
+else
+  git clone -b "${branch}" --depth=1 "${repo_url}" "${install_dir}"
+fi
+
+"${install_dir}/scripts/install_birdnet.sh"
+if [ $? -eq 0 ];then
   echo "Installation completed successfully"
   sudo reboot
 else

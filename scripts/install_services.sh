@@ -174,7 +174,7 @@ EOF
 
 install_Caddyfile() {
   [ -d /etc/caddy ] || mkdir /etc/caddy
-  if [ -f /etc/caddy/Caddyfile ];then
+  if [ -f /etc/caddy/Caddyfile ] && ! [ -f /etc/caddy/Caddyfile.original ];then
     cp /etc/caddy/Caddyfile{,.original}
   fi
   if ! [ -z ${CADDY_PWD} ];then
@@ -399,12 +399,14 @@ EOF
 }
 
 install_phpsysinfo() {
-  sudo -u ${USER} git clone https://github.com/phpsysinfo/phpsysinfo.git \
-    ${HOME}/phpsysinfo
+  if ! [ -d ${HOME}/phpsysinfo ]; then
+    sudo -u ${USER} git clone https://github.com/phpsysinfo/phpsysinfo.git \
+      ${HOME}/phpsysinfo
+  fi
 }
 
 config_icecast() {
-  if [ -f /etc/icecast2/icecast.xml ];then
+  if [ -f /etc/icecast2/icecast.xml ] && ! [ -f /etc/icecast2/icecast.xml.prebirdnetpi ];then
     cp /etc/icecast2/icecast.xml{,.prebirdnetpi}
   fi
   sed -i 's/>admin</>birdnet</g' /etc/icecast2/icecast.xml
@@ -437,15 +439,21 @@ EOF
 }
 
 install_cleanup_cron() {
-  sed "s/\$USER/$USER/g" $my_dir/templates/cleanup.cron >> /etc/crontab
+  if ! grep -q 'disk_check.sh' /etc/crontab; then
+    sed "s/\$USER/$USER/g" $my_dir/templates/cleanup.cron >> /etc/crontab
+  fi
 }
 
 install_weekly_cron() {
-  sed "s/\$USER/$USER/g" $my_dir/templates/weekly_report.cron >> /etc/crontab
+  if ! grep -q 'weekly_report.sh' /etc/crontab; then
+    sed "s/\$USER/$USER/g" $my_dir/templates/weekly_report.cron >> /etc/crontab
+  fi
 }
 
 install_automatic_update_cron() {
-  sed "s/\$USER/$USER/g" $my_dir/templates/automatic_update.cron >> /etc/crontab
+  if ! grep -q 'update_birdnet.sh -a' /etc/crontab; then
+    sed "s/\$USER/$USER/g" $my_dir/templates/automatic_update.cron >> /etc/crontab
+  fi
 }
 
 chown_things() {
@@ -453,7 +461,7 @@ chown_things() {
 }
 
 increase_caddy_timeout() {
-  mkdir /etc/systemd/system/caddy.service.d
+  mkdir -p /etc/systemd/system/caddy.service.d
   cat << EOF > /etc/systemd/system/caddy.service.d/override.conf
 [Service]
 TimeoutSec=300s

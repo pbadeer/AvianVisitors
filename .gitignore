@@ -35,6 +35,7 @@ IdentifiedSoFar.txt
 IdentifiedSoFar.txt.bak
 Birders_Guide_Installer_Configuration.txt
 birdnet/
+vendor/tflite/
 templates/*.service
 scripts/*.txt
 scripts/*.db

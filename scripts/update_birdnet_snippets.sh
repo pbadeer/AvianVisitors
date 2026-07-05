@@ -27,7 +27,6 @@ chmod g+r $HOME
 chmod -R o-w ~/BirdNET-Pi/templates/*
 
 APT_UPDATED=0
-PIP_UPDATED=0
 
 # helpers
 sudo_with_user () {
@@ -36,10 +35,6 @@ sudo_with_user () {
 
 ensure_apt_updated () {
   [[ $APT_UPDATED != "UPDATED" ]] && apt-get update && APT_UPDATED="UPDATED"
-}
-
-ensure_pip_updated () {
-  [[ $PIP_UPDATED != "UPDATED" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install -U pip && PIP_UPDATED="UPDATED"
 }
 
 remove_unit_file() {
@@ -51,15 +46,6 @@ remove_unit_file() {
     if [ $# == 2 ]; then
       rm -f "${2}"
     fi
-  fi
-}
-
-ensure_python_package() {
-  # ensure_python_package pytest pytest==7.1.2
-  pytest_installation_status=$(~/BirdNET-Pi/birdnet/bin/python3 -c 'import pkgutil; import sys; print("installed" if pkgutil.find_loader(sys.argv[1]) else "not installed")' "$1")
-  if [[ "$pytest_installation_status" = "not installed" ]];then
-    ensure_pip_updated
-    sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install "$2"
   fi
 }
 
@@ -146,31 +132,11 @@ if ! which inotifywait &>/dev/null;then
   apt-get -y install inotify-tools
 fi
 
-apprise_version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import apprise; print(apprise.__version__)")
-[[ $apprise_version != "1.9.5" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install apprise==1.9.5
-version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import streamlit; print(streamlit.__version__)")
-[[ $version != "1.44.0" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install streamlit==1.44.0
-version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import seaborn; print(seaborn.__version__)")
-[[ $version != "0.13.2" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install seaborn==0.13.2
-version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import suntime; print(suntime.__version__)")
-[[ $version != "1.3.2" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install suntime==1.3.2
-version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import pyarrow; print(pyarrow.__version__)")
-[[ $version != "20.0.0" ]] && sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install pyarrow==20.0.0
-
-PY_VERSION=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import sys; print(f'{sys.version_info[0]}{sys.version_info[1]}')")
-tf_version=$($HOME/BirdNET-Pi/birdnet/bin/python3 -c "import tflite_runtime; print(tflite_runtime.__version__)")
-if [ "$PY_VERSION" == 39 ] && [ "$tf_version" != "2.11.0" ] || [ "$PY_VERSION" != 39 ] && [ "$tf_version" != "2.17.1" ]; then
-  get_tf_whl
-  # include our numpy dependants so pip can figure out which numpy version to install
-  sudo_with_user $HOME/BirdNET-Pi/birdnet/bin/pip3 install $HOME/BirdNET-Pi/$WHL pandas librosa matplotlib
-fi
-
-ensure_python_package inotify inotify
-ensure_python_package soundfile soundfile
-
-if ! which inotifywait &>/dev/null;then
-  ensure_apt_updated
-  apt-get -y install inotify-tools
+ensure_uv
+if [ -x "$HOME/BirdNET-Pi/birdnet/bin/python3" ]; then
+  sudo_with_user sync_birdnet_env "$HOME/BirdNET-Pi/birdnet/bin/python3"
+else
+  sudo_with_user sync_birdnet_env "$(command -v python3)"
 fi
 
 install_tmp_mount

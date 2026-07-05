@@ -31,16 +31,15 @@ install_birdnet() {
     export TMPDIR=$HOME/bird_tmp
   fi
   cd ~/BirdNET-Pi || exit 1
-  echo "Establishing a python virtual environment"
-  python3 -m venv birdnet
-  source ./birdnet/bin/activate
-  pip3 install wheel
-  get_tf_whl
+  echo "Syncing Python environment with uv"
+  ensure_uv
+  export UV_PROJECT_ENVIRONMENT=birdnet
+  export UV_PYTHON_DOWNLOADS=never
   LOOP_COUNT=2
-  while ! pip3 install -U -r ./requirements_custom.txt
+  while ! sync_birdnet_env "$(command -v python3)"
   do
     LOOP_COUNT=$(( LOOP_COUNT - 1 ))
-    pip3 cache purge
+    "$UV" cache clean
     [ $LOOP_COUNT == 0 ] && exit 1
     sleep 5
   done
