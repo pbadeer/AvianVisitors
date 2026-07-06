@@ -113,7 +113,6 @@ dependencies = [
     { name = "pillow" },
     { name = "plotly" },
     { name = "pyarrow" },
-    { name = "pytest" },
     { name = "pytz" },
     { name = "requests" },
     { name = "seaborn" },
@@ -131,6 +130,12 @@ dependencies = [
     { name = "tzlocal" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "flake8" },
+    { name = "pytest" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "apprise", specifier = "==1.9.5" },
@@ -143,7 +148,6 @@ requires-dist = [
     { name = "pillow" },
     { name = "plotly" },
     { name = "pyarrow", specifier = "==20.0.0" },
-    { name = "pytest", specifier = "==7.1.2" },
     { name = "pytz" },
     { name = "requests" },
     { name = "seaborn" },
@@ -160,6 +164,12 @@ requires-dist = [
     { name = "tflite-runtime", marker = "python_full_version == '3.12.*' and platform_machine == 'x86_64'", url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp312-cp312-linux_x86_64.whl" },
     { name = "tflite-runtime", marker = "python_full_version == '3.13.*' and platform_machine == 'x86_64'", url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp313-cp313-linux_x86_64.whl" },
     { name = "tzlocal" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "flake8" },
+    { name = "pytest", specifier = "==7.1.2" },
 ]
 
 [[package]]
@@ -343,6 +353,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/60/8b/32f9823da46cde7df2087faa08cd98d01b908f8dcab982cdba9c84e85355/decorator-5.3.1.tar.gz", hash = "sha256:4cbcdd55a6efadb9dbea26b858f4fb3264567b52d69ca0d25b721b553f60ea82", size = 58084, upload-time = "2026-05-18T06:03:28.057Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl", hash = "sha256:f47fe6fdbd2edd623ecfe36875d37aba411624e2670dd395dddae1358689bb3c", size = 10365, upload-time = "2026-05-18T06:03:26.517Z" },
+]
+
+[[package]]
+name = "flake8"
+version = "7.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mccabe" },
+    { name = "pycodestyle" },
+    { name = "pyflakes" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9b/af/fbfe3c4b5a657d79e5c47a2827a362f9e1b763336a52f926126aa6dc7123/flake8-7.3.0.tar.gz", hash = "sha256:fe044858146b9fc69b551a4b490d69cf960fcb78ad1edcb84e7fbb1b4a8e3872", size = 48326, upload-time = "2025-06-20T19:31:35.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/56/13ab06b4f93ca7cac71078fbe37fcea175d3216f31f85c3168a6bbd0bb9a/flake8-7.3.0-py2.py3-none-any.whl", hash = "sha256:b9696257b9ce8beb888cdbe31cf885c90d31928fe202be0889a7cdafad32f01e", size = 57922, upload-time = "2025-06-20T19:31:34.425Z" },
 ]
 
 [[package]]
@@ -720,6 +744,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/a7/bb01188fb4013d34d274caf44a2f8091255b0497438e8b6c0a7c1710c692/matplotlib-3.9.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57aa235109e9eed52e2c2949db17da185383fa71083c00c6c143a60e07e0888c", size = 8314492, upload-time = "2024-12-13T05:56:09.964Z" },
     { url = "https://files.pythonhosted.org/packages/33/19/02e1a37f7141fc605b193e927d0a9cdf9dc124a20b9e68793f4ffea19695/matplotlib-3.9.4-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:b18c600061477ccfdd1e6fd050c33d8be82431700f3452b297a56d9ed7037abb", size = 9092500, upload-time = "2024-12-13T05:56:13.55Z" },
     { url = "https://files.pythonhosted.org/packages/b2/1f/e709c6ec7b5321e6568769baa288c7178e60a93a9da9e682b39450da0e29/matplotlib-3.9.4-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bcc53cf157a657bfd03afab14774d54ba73aa84d42cfe2480c91bd94873952db", size = 8313423, upload-time = "2024-12-13T05:56:26.719Z" },
+]
+
+[[package]]
+name = "mccabe"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658, upload-time = "2022-01-24T01:14:51.113Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350, upload-time = "2022-01-24T01:14:49.62Z" },
 ]
 
 [[package]]
@@ -1146,6 +1179,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pycodestyle"
+version = "2.14.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/e0/abfd2a0d2efe47670df87f3e3a0e2edda42f055053c85361f19c0e2c1ca8/pycodestyle-2.14.0.tar.gz", hash = "sha256:c4b5b517d278089ff9d0abdec919cd97262a3367449ea1c8b49b91529167b783", size = 39472, upload-time = "2025-06-20T18:49:48.75Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl", hash = "sha256:dd6bf7cb4ee77f8e016f9c8e74a35ddd9f67e1d5fd4184d86c3b98e07099f42d", size = 31594, upload-time = "2025-06-20T18:49:47.491Z" },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.23"
 source = { registry = "https://pypi.org/simple" }
@@ -1166,6 +1208,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f4/c9/f71032fca47ecc09d30904d9a610234b07139f89eabc2f054b141edcc30f/pydeck-0.9.3.tar.gz", hash = "sha256:695775cbfe51f5fdffbd9735ba469987fdc5efc96bc40a0ee4808170509c78b2", size = 5900912, upload-time = "2026-07-02T23:27:08.704Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6f/34/3998411437aff304a9ed4fa37a6fe1ef3132bcd2b5eac59851b80c86123c/pydeck-0.9.3-py2.py3-none-any.whl", hash = "sha256:d8a47c11c81fb12d51b1feb42427ff4f0e13cb599e48931021b2cba98b6849a6", size = 11428091, upload-time = "2026-07-02T23:27:06.399Z" },
+]
+
+[[package]]
+name = "pyflakes"
+version = "3.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/45/dc/fd034dc20b4b264b3d015808458391acbf9df40b1e54750ef175d39180b1/pyflakes-3.4.0.tar.gz", hash = "sha256:b24f96fafb7d2ab0ec5075b7350b3d2d2218eab42003821c06344973d3ea2f58", size = 64669, upload-time = "2025-06-20T18:45:27.834Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/2f/81d580a0fb83baeb066698975cb14a618bdbed7720678566f1b046a95fe8/pyflakes-3.4.0-py2.py3-none-any.whl", hash = "sha256:f742a7dbd0d9cb9ea41e9a24a918996e8170c799fa528688d40dd582c8265f4f", size = 63551, upload-time = "2025-06-20T18:45:26.937Z" },
 ]
 
 [[package]]
@@ -1610,7 +1661,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.11.0-cp39-cp39-linux_x86_64.whl", hash = "sha256:cfcaf371f9897c8f510243dc032c94c6b50b6cb67c854f28f5e44ace6b6b5545" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.11.0-cp39-cp39-linux_x86_64.whl", hash = "sha256:cfcaf371f9897c8f510243dc032c94c6b50b6cb67c854f28f5e44ace6b6b5545" },
 ]
 
 [package.metadata]
@@ -1627,7 +1678,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.11.0-cp39-none-linux_aarch64.whl", hash = "sha256:9f8c4bca7991bcc5f93e2f6f75ee75866e7dd6ba789d8c84b1e3475c28f5a8f1" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.11.0-cp39-none-linux_aarch64.whl", hash = "sha256:9f8c4bca7991bcc5f93e2f6f75ee75866e7dd6ba789d8c84b1e3475c28f5a8f1" },
 ]
 
 [package.metadata]
@@ -1644,7 +1695,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp311-cp311-linux_aarch64.whl", hash = "sha256:ae356f18e4de080833643bcdc1b363730750f1198b2c40b4cd0743042fb1b75b" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp311-cp311-linux_aarch64.whl", hash = "sha256:ae356f18e4de080833643bcdc1b363730750f1198b2c40b4cd0743042fb1b75b" },
 ]
 
 [package.metadata]
@@ -1661,7 +1712,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp311-cp311-linux_x86_64.whl", hash = "sha256:e738ee618af26c368c763ee421dbbaf0eca0334f861fa464473a8b539adf2322" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp311-cp311-linux_x86_64.whl", hash = "sha256:e738ee618af26c368c763ee421dbbaf0eca0334f861fa464473a8b539adf2322" },
 ]
 
 [package.metadata]
@@ -1678,7 +1729,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp312-cp312-linux_aarch64.whl", hash = "sha256:109a228f4fbe06b061c428d622f59a8b2e01b9e0927df4e834fca3d1c6514332" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp312-cp312-linux_aarch64.whl", hash = "sha256:109a228f4fbe06b061c428d622f59a8b2e01b9e0927df4e834fca3d1c6514332" },
 ]
 
 [package.metadata]
@@ -1695,7 +1746,7 @@ dependencies = [
     { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp312-cp312-linux_x86_64.whl", hash = "sha256:92d03df94292b7f0f3b40e2fdaeaf563f4632a1a840b1116bbda44ee986aef76" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp312-cp312-linux_x86_64.whl", hash = "sha256:92d03df94292b7f0f3b40e2fdaeaf563f4632a1a840b1116bbda44ee986aef76" },
 ]
 
 [package.metadata]
@@ -1712,7 +1763,7 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp313-cp313-linux_aarch64.whl", hash = "sha256:bc5531deb0a36cacef481f9dbdabf097708f58a6486b8bbfed2823774a455157" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp313-cp313-linux_aarch64.whl", hash = "sha256:bc5531deb0a36cacef481f9dbdabf097708f58a6486b8bbfed2823774a455157" },
 ]
 
 [package.metadata]
@@ -1729,7 +1780,7 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" } },
 ]
 wheels = [
-    { filename = "tflite_runtime-2.17.1-cp313-cp313-linux_x86_64.whl", hash = "sha256:08495afa6662d37b19597d3aab7c2a66c0520c73d956b3cb6bf83a475aeb32ab" },
+    { url = "https://github.com/Nachtzuster/BirdNET-Pi/releases/download/v0.1/tflite_runtime-2.17.1-cp313-cp313-linux_x86_64.whl", hash = "sha256:08495afa6662d37b19597d3aab7c2a66c0520c73d956b3cb6bf83a475aeb32ab" },
 ]
 
 [package.metadata]

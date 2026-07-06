@@ -18,7 +18,7 @@ sync_birdnet_env () {
   export UV_PROJECT_ENVIRONMENT=birdnet
   export UV_PYTHON_DOWNLOADS=never
   local python_bin="${1:-$(command -v python3)}"
-  local sync_args=(sync --python "$python_bin")
+  local sync_args=(sync --python "$python_bin" --no-dev)
   if [ -f uv.lock ]; then
     sync_args+=(--frozen)
   fi

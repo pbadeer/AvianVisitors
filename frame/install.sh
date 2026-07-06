@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install the AvianVisitors e-ink frame (display side) on a Raspberry Pi.
-# Enables SPI + I2C, installs deps, makes a venv, installs the systemd timer.
+# Enables SPI + I2C, installs deps, syncs a uv env, installs the systemd timer.
 #
 # Three ways to feed the frame, pick one:
 #   ./install.sh                            mirror the BirdNET-Pi on your network
@@ -13,10 +13,23 @@ set -euo pipefail
 cd "$(dirname "$0")"
 FRAME="$(pwd)"
 
+ensure_uv () {
+  if command -v uv &>/dev/null; then
+    UV="$(command -v uv)"
+  elif [ -x "$HOME/.local/bin/uv" ]; then
+    UV="$HOME/.local/bin/uv"
+  else
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    UV="$HOME/.local/bin/uv"
+  fi
+  export UV
+}
+
 MODE=local            # local | image | birdweather
 ZIP=""
 IMAGE_URL=""
 EBIRD_KEY=""
+BASE_URL="http://birdnet.local"
 while [ $# -gt 0 ]; do
   case "$1" in
     --bird-weather) MODE=birdweather; shift ;;
@@ -29,6 +42,9 @@ while [ $# -gt 0 ]; do
     --ebird-key) [ $# -ge 2 ] || { echo "--ebird-key needs a value (a free key from ebird.org/api/keygen)" >&2; exit 1; }
                  EBIRD_KEY="$2"; shift 2 ;;
     --ebird-key=*) EBIRD_KEY="${1#*=}"; shift ;;
+    --base-url) [ $# -ge 2 ] || { echo "--base-url needs a URL, e.g. --base-url http://localhost" >&2; exit 1; }
+                BASE_URL="$2"; shift 2 ;;
+    --base-url=*) BASE_URL="${1#*=}"; shift ;;
     *) echo "unknown argument: $1" >&2; exit 1 ;;
   esac
 done
@@ -39,6 +55,10 @@ if [ -n "$ZIP" ] && [ "$MODE" != birdweather ]; then
 fi
 if [ -n "$EBIRD_KEY" ] && [ "$MODE" != birdweather ]; then
   echo "--ebird-key only applies with --bird-weather" >&2
+  exit 1
+fi
+if [ "$BASE_URL" != "http://birdnet.local" ] && [ "$MODE" != local ]; then
+  echo "--base-url only applies in local mode" >&2
   exit 1
 fi
 
@@ -73,6 +93,16 @@ if [ "$MODE" = image ]; then
     exit 1
   fi
 fi
+if [ "$MODE" = local ]; then
+  case "$BASE_URL" in
+    http://*|https://*) ;;
+    *) echo "--base-url must start with http:// or https://" >&2; exit 1 ;;
+  esac
+  if printf '%s' "$BASE_URL" | LC_ALL=C grep -q '[^A-Za-z0-9._~:/?#@!$&()*+,;=%-]'; then
+    echo "--base-url has characters that are not allowed in a URL" >&2
+    exit 1
+  fi
+fi
 
 # local + birdweather render on the Pi (need a browser); image only fetches.
 NEEDS_BROWSER=1
@@ -88,17 +118,20 @@ grep -q "^dtoverlay=spi0-0cs" "$CONFIG_TXT" || echo "dtoverlay=spi0-0cs" | sudo 
 
 echo "2/5  Installing system packages (build tools to compile spidev, libatlas3-base for numpy)..."
 sudo apt-get update -qq
-sudo apt-get install -y python3-venv python3-dev build-essential libatlas3-base
+sudo apt-get install -y curl python3-dev build-essential libatlas3-base
 
-echo "3/5  Creating venv and installing Python deps..."
-python3 -m venv .venv
-.venv/bin/pip install -q --upgrade pip
-.venv/bin/pip install -q -r requirements-frame.txt
+echo "3/5  Syncing Python environment with uv..."
+ensure_uv
+export UV_PYTHON_DOWNLOADS=never
+SYNC_ARGS=(sync --frozen --python "$(command -v python3)")
+if [ "$NEEDS_BROWSER" = 1 ]; then
+  SYNC_ARGS+=(--extra shoot)
+fi
+"$UV" "${SYNC_ARGS[@]}"
 if [ "$NEEDS_BROWSER" = 1 ]; then
   echo "     Installing Playwright + Chromium so the Pi can render the collage (a few minutes)..."
-  .venv/bin/pip install -q playwright
-  sudo .venv/bin/playwright install-deps chromium
-  .venv/bin/playwright install chromium
+  sudo "$UV" run playwright install-deps chromium
+  "$UV" run playwright install chromium
 fi
 
 echo "4/5  Writing config..."
@@ -113,21 +146,21 @@ if [ -f "$CONFIG" ]; then
   fi
   echo "     $CONFIG already exists, leaving it untouched."
 elif [ "$MODE" = local ]; then
-  cat > "$CONFIG" <<'CFG'
-# birdframe-mode: local
-# AvianVisitors frame, local mode: mirrors the BirdNET-Pi on your network.
-# This Pi screenshots birdnet.local itself, so there is nothing else to set up.
-base_url = "http://birdnet.local"
-shoot = true
-shoot_title = "Avian Visitors"
-shoot_subtitle = "Heard Today"
-rotate = 90          # flip to 270 if the frame hangs the other way up
-saturation = 0.6
-timeout = 45
-# If your BirdNET-Pi is behind basic-auth, uncomment and set these:
-# basic_user = "..."
-# basic_pass = "..."
-CFG
+  {
+    printf '%s\n' '# birdframe-mode: local'
+    printf '%s\n' '# AvianVisitors frame, local mode: mirrors the BirdNET-Pi on your network.'
+    printf '%s\n' '# This Pi screenshots the collage itself from base_url below.'
+    printf 'base_url = "%s"\n' "$BASE_URL"
+    printf '%s\n' 'shoot = true'
+    printf '%s\n' 'shoot_title = "Avian Visitors"'
+    printf '%s\n' 'shoot_subtitle = "Heard Today"'
+    printf '%s\n' 'rotate = 90          # flip to 270 if the frame hangs the other way up'
+    printf '%s\n' 'saturation = 0.6'
+    printf '%s\n' 'timeout = 45'
+    printf '%s\n' '# If your BirdNET-Pi is behind basic-auth, uncomment and set these:'
+    printf '%s\n' '# basic_user = "..."'
+    printf '%s\n' '# basic_pass = "..."'
+  } > "$CONFIG"
 elif [ "$MODE" = image ]; then
   BASE="$(printf '%s' "$IMAGE_URL" | sed -E 's#^(https?://[^/]+).*#\1#')"
   # printf, not a heredoc: the URL is written literally, never shell-expanded.
@@ -184,7 +217,7 @@ case "$MODE" in
   local)
     cat <<DONE
 
-Installed. The frame mirrors birdnet.local on your network and refreshes every
+Installed. The frame mirrors $BASE_URL and refreshes every
 15 min, only when the birds change. Until the mic has heard its first bird it
 shows a plain title card. If the panel hangs upside down, set rotate = 270 in
 ~/.birdframe/config.toml.
@@ -210,7 +243,9 @@ esac
 
 # SPI only takes effect on a reboot, so do it for the user. Skip if SPI is
 # already up (e.g. a re-run) so we don't bounce a working frame.
-if [ -e /dev/spidev0.0 ]; then
+if [ -n "${BIRDFRAME_DEFER_REBOOT:-}" ]; then
+  echo "Reboot deferred (caller will reboot)."
+elif [ -e /dev/spidev0.0 ]; then
   echo "SPI already active, no reboot needed."
 else
   echo "Rebooting to bring SPI up (back on its own in ~1 min)..."

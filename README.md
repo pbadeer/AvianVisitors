@@ -52,6 +52,14 @@ curl -s https://raw.githubusercontent.com/Twarner491/AvianVisitors/avian-visitor
 
 Clones this fork, installs BirdNET-Pi, symlinks the AvianVisitors overlay into the Caddy web root. Takes 20-40 minutes. Reboots when done.
 
+To install the bird mic and the e-ink frame on the same Pi (Pi 4/5 recommended; needs a browser for local frame mode):
+
+```bash
+curl -s https://raw.githubusercontent.com/Twarner491/AvianVisitors/avian-visitors/newinstaller.sh | bash -s -- --with-frame
+```
+
+Pass frame flags after `--with-frame` to pick a mode other than the default co-hosted local install (`--base-url http://localhost`), e.g. `--with-frame --bird-weather --zip 94107`.
+
 Collage: `http://birdnet.local/`. Stock BirdNET-Pi UI: `http://birdnet.local/index.php`. The menu button in the top right opens an admin overlay with settings, system, log, and tool panels.
 
 ---
@@ -102,7 +110,7 @@ Everything outside `avian/` and `frame/` is upstream BirdNET-Pi.
 
 ## Wall frame
 
-An optional e-ink frame mirrors the last 24h of birds onto a panel by your window. Build it from [`frame/`](frame/README.md). It can run off your own BirdNET mic, or standalone from BirdWeather data for any ZIP code with no mic at all.
+An optional e-ink frame mirrors the last 24h of birds onto a panel by your window. Build it from [`frame/`](frame/README.md). It can run off your own BirdNET mic, on the same Pi as BirdNET (`newinstaller.sh --with-frame`), or standalone from BirdWeather data for any ZIP code with no mic at all.
 
 ---
 

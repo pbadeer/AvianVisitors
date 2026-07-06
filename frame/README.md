@@ -45,7 +45,7 @@ Then install in Pi and power up.
 
 ```bash
 ssh <your-username>@birdpic.local
-sudo apt update && sudo apt install -y git
+sudo apt update && sudo apt install -y git curl
 git clone https://github.com/Twarner491/AvianVisitors
 cd AvianVisitors/frame
 ```
@@ -56,6 +56,9 @@ Pick how the frame gets its birds:
 # Pair with your bird mic on the same network (birdnet.local). The default.
 ./install.sh
 
+# Bird mic on this same Pi (after newinstaller.sh --with-frame, or manual co-host):
+./install.sh --base-url http://localhost
+
 # No microphone: draw the collage from BirdWeather for any ZIP code.
 ./install.sh --bird-weather --zip 94107
 
@@ -63,6 +66,8 @@ Pick how the frame gets its birds:
 ./install.sh --image-url https://bird.onethreenine.net/frame.png?k=YOUR_FRAME_KEY
 ```
 
-Each one enables SPI + I2C, installs the deps and a systemd timer, writes `~/.birdframe/config.toml`, and reboots once to bring SPI up. Full options live in [`config.example.toml`](config.example.toml).
+Each one enables SPI + I2C, syncs Python deps with [uv](https://docs.astral.sh/uv/) (`frame/pyproject.toml` + `frame/uv.lock` into `frame/.venv`), installs a systemd timer, writes `~/.birdframe/config.toml`, and reboots once to bring SPI up. Full options live in [`config.example.toml`](config.example.toml).
+
+**Combined mic + frame on one Pi:** skip a separate frame checkout and run the main installer with `--with-frame` instead (see the root [README](../README.md)); it finishes BirdNET first, then runs this script with `--base-url http://localhost` unless you pass other frame flags.
 
 BirdWeather mode renders on the Pi from this repo's illustrations on GitHub, so there is no image set to copy over. ZIP codes with no station nearby fall back to the closest ones. If you are far from any BirdWeather station, add `--ebird-key <key>` (a free key from [ebird.org/api/keygen](https://ebird.org/api/keygen)) and the frame fills from eBird sightings instead.
