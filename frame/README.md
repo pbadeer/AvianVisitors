@@ -72,6 +72,8 @@ Each one enables SPI + I2C, installs the deps and a systemd timer, writes `~/.bi
 
 The default layout matches the A5 opening in the frame listed above. If you use a different mat or a bare panel, set `opening` in `~/.birdframe/config.toml`; `0.7071` preserves the current A5 dimensions, while values up to about `0.98` use more of the panel. This one setting scales a fixed 1:sqrt(2) opening, not width and height independently. For a B5 opening, `0.84` is a useful starting point, but check it against your physical mat.
 
+**Waveshare panel instead of an Inky:** the [13.3" e-Paper HAT+ (E)](https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm) carries the same EL133UF1 Spectra 6 panel, so the Inky driver runs it on remapped pins. It has no EEPROM, so auto-detect fails with `No EEPROM detected!` — set `panel = "waveshare13in3e"` in `~/.birdframe/config.toml` and it drives GPIO 25/17/24 (DC/RST/BUSY) plus the HAT's power-enable on GPIO 18.
+
 Bird names are off on the frame by default. Turn them on or off at any time; the command saves the preference and requests an immediate refresh:
 
 ```bash
