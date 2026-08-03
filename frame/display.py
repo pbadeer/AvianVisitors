@@ -47,6 +47,8 @@ DEFAULTS = {
     "bw_days": 7,           # BirdWeather lookback window, in days
     "bw_country": "us",     # geocoder country for the ZIP
     "hours": 24,
+    "daily_reset": False,   # True = "Heard Today" window is since local midnight,
+                            # not the last `hours`; resets daily at the device TZ's midnight
     "image": "",            # local PNG written by the shooter
     "image_url": "",        # or a published screenshot URL
     "shoot": False,         # or capture inline (needs a browser; the 3 A+ and Zero 2 W both handle it)
@@ -88,8 +90,10 @@ def _bucket(n):
     return 8
 
 
-def fetch_recent(base, hours, timeout, auth=None):
+def fetch_recent(base, hours, timeout, auth=None, daily=False):
     url = f"{base.rstrip('/')}/avian/api/birdnet-api.php?action=recent&hours={hours}"
+    if daily:
+        url += "&daily=1"
     req = urllib.request.Request(url, headers={"User-Agent": "AvianVisitors-frame/1.0"})
     if auth:
         req.add_header("Authorization", auth)
@@ -136,7 +140,8 @@ def fetch_species(cfg, auth=None):
         if kind == "station":
             return birdweather.species_for_station(value, days=cfg["bw_days"])
         return birdweather.species_for_zip(value, country=cfg["bw_country"], days=cfg["bw_days"])
-    return fetch_recent(cfg["base_url"], cfg["hours"], cfg["timeout"], auth)
+    return fetch_recent(cfg["base_url"], cfg["hours"], cfg["timeout"], auth,
+                        daily=cfg.get("daily_reset", False))
 
 
 # --- image ------------------------------------------------------------------
