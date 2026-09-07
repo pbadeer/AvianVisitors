@@ -106,7 +106,7 @@ To confirm a real refresh is happening, push a test card from the Pi and watch B
 python3 _panel_test.py --times 3    # three in a row proves it doesn't wedge
 ```
 
-If a panel never refreshes at all — even when driven by Waveshare's own reference demo rather than this code — the fault is in the hardware (HAT / panel / connection), not in the frame.
+If a panel never refreshes at all — even when driven by Waveshare's own reference demo rather than this code — the fault is in the hardware (HAT / panel / connection), not in the frame. To narrow it down before touching drivers, run the BUSY oracle on the Pi (`sudo python3 tools/busy_oracle.py`): it distinguishes a floating BUSY (HAT-to-Pi chain broken), a BUSY shorted to GND (wrong adapter / flipped FFC), and a live controller (drives BUSY high when idle).
 
 Bird names are off on the frame by default. Turn them on or off at any time; the command saves the preference and requests an immediate refresh:
 
