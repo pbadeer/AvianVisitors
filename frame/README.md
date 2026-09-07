@@ -91,6 +91,13 @@ These sit on SPI0 (SCK 11, MOSI 10); the two CS lines are SPI0's CE0/CE1. Three 
 - **The init values and reset differ** from the Pimoroni ones. This panel wants Waveshare's own `AN_TM`/`CDI`/`PSR`/boost values and a double reset pulse; the frame sends those.
 - **The panel is powered through PWR** (a 1-0-1 pulse to turn it on, dropped again after the refresh) and **deep-slept after each refresh**, per Waveshare's manual.
 
+**Wiring the panel — read this before plugging anything in.** Two rules, both learned the hard way:
+
+1. **Ribbon orientation: silver contacts face DOWN, towards the board**, at every FFC connection (panel ribbon into the HAT's connector, and any cable into the Pi's header adapter). Contacts up = pins mis-map and the panel does nothing.
+2. **Never put the Waveshare "e-Paper Adapter (B)" extension board in the chain.** It is built for the older 13.3" e-Paper **(B)** panel family and does not pass the (E) panel's pins through — BUSY lands on GND, so the panel never refreshes no matter how well it is seated. The (E) panel's ribbon connects **directly to the HAT+ (E)**.
+
+The panel ribbon reaches the HAT when the HAT is seated on the Pi's 40-pin header. If you need the panel farther from the Pi, do **not** extend on the panel side. Instead, keep the panel ribbon direct into the HAT and move the *HAT itself* off the Pi with the HAT's 10-pin cable: HAT → 10-pin breakout cable → Pi header pins (VCC to 3.3 V pin 1, GND to pin 6, DIN to GPIO10/pin 19, CLK to GPIO11/pin 23, CS_M to GPIO8/pin 24, CS_S to GPIO7/pin 26, DC to GPIO25/pin 22, RST to GPIO17/pin 11, BUSY to GPIO24/pin 18, PWR to GPIO18/pin 12).
+
 **A refresh is verified, not assumed.** The frame samples BUSY while a refresh runs and counts it as real only if BUSY toggles idle → busy → idle. A controller that ignores the refresh command (wedged or unpowered) leaves BUSY stuck, so the frame raises `PanelRefreshError` rather than silently leaving the old image up. With `auto_power_cycle = true` (default) it reboots once to power-cycle a wedged controller; set it to `false` to only log.
 
 To confirm a real refresh is happening, push a test card from the Pi and watch BUSY:
