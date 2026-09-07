@@ -590,6 +590,16 @@ def push_panel(img, rotate, saturation, panel="", cache_dir="~/.birdframe", auto
     finally:
         if pwr:
             _power_off(*pwr)
+        # Release the gpiod claim explicitly. _patch_waveshare's closures keep
+        # the device alive (a dev -> lambda -> dev cycle), so without this the
+        # lines stay claimed and a second push in the same process cannot
+        # request them — its BUSY verification would have nothing to read.
+        g = getattr(dev, "_gpio", None)
+        if g is not None:
+            try:
+                g.release()
+            except Exception:
+                pass
     if not ok:
         print("===============================================================", file=sys.stderr)
         print(f"!! PANEL REFRESH FAILED: {reason}", file=sys.stderr)
